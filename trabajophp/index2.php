@@ -3,21 +3,18 @@ require 'database.php';
 if($_POST){
 $usuario=$_POST['cuenta'];
 $password=$_POST['contra'];
-$consulta = mysqli_query($enlace, "SELECT*FROM datos where Nombre='$usuario' and Contraseña='$password'");
+$consulta = mysqli_query($enlace, "SELECT*FROM datos where Nombre='$usuario'");
 $fila = mysqli_num_rows($consulta);
-if ($fila > 0){
+$buscarpass = mysqli_fetch_array($consulta);
+
+if(($fila == 1) && (password_verify($password, $buscarpass['Contraseña']))){
     session_start();
     $_SESSION['cliente'] = $usuario;
-    header("location:inicio.php");
-} else{
-    echo '
-    <script>
-    alert("El Nombre o la Contraseña son invalidos");
-    </script>
-    ';
+    header("location:inicio/index.php");
+}else{
+    echo "<script>alert('Usuario o contraseña incorrecto')</script>";
 }
-mysqli_free_result($consulta);
-mysqli_close($enlace);
+
 }
 ?>
 
@@ -27,7 +24,7 @@ mysqli_close($enlace);
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="estilo.css">
+    <link rel="stylesheet" href="css/estilo.css">
 </head>
 <body>
     <div class="container">
@@ -37,7 +34,7 @@ mysqli_close($enlace);
     <input type="password" name="contra" placeholder="Ingrese contraseña">
     <input type="submit" value="Enviar" name="logear" >
     </form>
-    <a href="index.php">Haga click para registrarse</a><br>
+    <p>No tienes una cuenta creada? Haz <a href="index.php">click </a>para registrarte!</p>
 </div>
 </body>
 </html>
